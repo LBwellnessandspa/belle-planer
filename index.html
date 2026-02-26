@@ -3,8 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Belle's Fit 10.0</title>
+    <title>Belle's Fit 10.2</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Prompt:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
     <style>
         /* --- Core Styles --- */
         :root { --bg-color: #000000; --card-bg: #1A1A1A; --text-gold: #C5A059; --text-white: #E0E0E0; --border: #333; }
@@ -44,7 +49,7 @@
         .btn-view-table { background: transparent; border: 1px solid var(--text-gold); color: var(--text-gold); padding: 5px 15px; font-size: 0.8rem; border-radius: 50px; cursor: pointer; }
         .btn-abs { border-color: #ff6b6b; color: #ff6b6b; } 
 
-        .modal { display: none; position: fixed; z-index: 999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.9); align-items: center; justify-content: center; flex-direction: column; }
+        .modal { display: none; position: fixed; z-index: 999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.9); align-items: center; justify-content: center; flex-direction: column; backdrop-filter: blur(5px); }
         .modal img { max-width: 95%; max-height: 80vh; border-radius: 10px; box-shadow: 0 0 20px rgba(197, 160, 89, 0.3); }
         .close-btn { color: white; font-size: 2rem; margin-top: 20px; cursor: pointer; background: #333; width: 50px; height: 50px; border-radius: 50%; display: flex; justify-content: center; align-items: center; }
 
@@ -57,6 +62,50 @@
         .history-table td { border-bottom: 1px solid #333; padding: 6px 2px; color: #ccc; text-align: center; }
         .history-table td:first-child { text-align: left; color: #888; }
         .del-btn { color: #ff5555; cursor: pointer; font-size: 1.2rem; }
+
+        /* --- Checklist & Modern Time Styles --- */
+        .time-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-size: 0.95rem; color: #ccc; }
+        .modern-time { background-color: #252525 !important; border: 1px solid var(--text-gold) !important; color: white !important; padding: 5px 15px !important; border-radius: 6px !important; font-family: 'Prompt' !important; outline: none !important; width: 100px !important; cursor: pointer; text-align: center; }
+        .modern-time::placeholder { color: #888; }
+        .flatpickr-calendar.dark { border: 1px solid var(--text-gold) !important; box-shadow: 0 10px 25px rgba(0,0,0,0.8) !important; font-family: 'Prompt', sans-serif !important; }
+        .numInputWrapper span.arrowUp:after { border-bottom-color: var(--text-gold) !important; }
+        .numInputWrapper span.arrowDown:after { border-top-color: var(--text-gold) !important; }
+        .custom-check-container { display: block; position: relative; padding-left: 35px; margin-bottom: 15px; cursor: pointer; font-size: 0.95rem; user-select: none; color: #ccc; }
+        .custom-check-container input { position: absolute; opacity: 0; cursor: pointer; height: 0; width: 0; }
+        .checkmark { position: absolute; top: 0; left: 0; height: 22px; width: 22px; background-color: #333; border-radius: 4px; transition: 0.2s; border: 1px solid #444; }
+        .custom-check-container:hover input ~ .checkmark { background-color: #444; }
+        .custom-check-container input:checked ~ .checkmark { background-color: var(--text-gold); border-color: var(--text-gold); }
+        .checkmark:after { content: "✓"; position: absolute; display: none; color: black; font-weight: bold; font-size: 14px; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        .custom-check-container input:checked ~ .checkmark:after { display: block; }
+        .stats-summary { margin-top: 20px; padding-top: 15px; border-top: 1px dashed #444; font-size: 0.85rem; color: #888; text-align: center; line-height: 1.6; }
+
+        /* --- Weekly Report Dashboard Styles --- */
+        .btn-view-report { background: rgba(197, 160, 89, 0.1); border: 1px solid var(--text-gold); color: var(--text-gold); padding: 12px 20px; font-size: 0.9rem; border-radius: 8px; cursor: pointer; margin-top: 15px; width: 100%; font-family: 'Prompt'; transition: 0.3s; font-weight: 600; letter-spacing: 1px; }
+        .btn-view-report:hover { background: var(--text-gold); color: black; }
+        
+        .report-card { background: #151515; border: 1px solid var(--text-gold); border-radius: 16px; padding: 25px; width: 90%; max-width: 400px; max-height: 85vh; overflow-y: auto; text-align: center; position: relative; font-family: 'Prompt', sans-serif; box-shadow: 0 10px 40px rgba(0,0,0,0.8); }
+        .close-report { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; color: #888; cursor: pointer; }
+        .report-score { font-size: 3.5rem; font-weight: bold; color: var(--text-gold); line-height: 1; margin-top: 15px; font-family: 'Playfair Display', serif;}
+        .report-feedback { color: #ccc; font-size: 0.9rem; margin-top: 5px; margin-bottom: 25px; padding: 0 10px;}
+        
+        .report-section-title { text-align: left; color: #888; font-size: 0.75rem; border-bottom: 1px dashed #333; padding-bottom: 5px; margin: 15px 0 15px; text-transform: uppercase; letter-spacing: 1px;}
+        
+        .report-days-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-bottom: 20px; }
+        .day-bubble { background: #222; border-radius: 8px; padding: 10px 0; font-size: 0.7rem; color: #888; border: 1px solid #333; }
+        .day-bubble.success { border-color: var(--text-gold); color: var(--text-gold); background: rgba(197, 160, 89, 0.05);}
+        .day-bubble.fail { border-color: #ff5555; color: #ff5555; background: rgba(255, 85, 85, 0.05);}
+        
+        .habit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;}
+        .habit-box { background: #222; border-radius: 8px; padding: 12px; font-size: 0.85rem; color: #ccc; border: 1px solid #333; }
+        .habit-box span { font-size: 1.4rem; font-weight: bold; color: var(--text-gold); display: block; margin-top: 5px; font-family: 'Playfair Display', serif;}
+        
+        .body-stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: left; margin-bottom: 10px;}
+        .stat-item { background: #222; padding: 12px; border-radius: 8px; font-size: 0.8rem; color: #aaa; border: 1px solid #333; display: flex; justify-content: space-between; align-items: center;}
+        .stat-val { font-size: 1.1rem; color: var(--text-white); font-weight: bold; }
+        .stat-diff { font-size: 0.75rem; padding: 3px 6px; border-radius: 4px; background: #111;}
+        .diff-down { color: #4caf50; border: 1px solid #4caf50;} /* สีเขียว ลดลง */
+        .diff-up { color: #ff5555; border: 1px solid #ff5555;} /* สีแดง เพิ่มขึ้น */
+        .diff-none { color: #888; border: 1px solid #555;}
     </style>
 </head>
 <body>
@@ -90,6 +139,46 @@
             <div class="routine-row"><div class="routine-time">23:00</div><div class="routine-desc">เข้านอน (ห้ามดึกกว่านี้!)</div></div>
         </div>
 
+        <div class="card">
+            <div class="card-title">☑️ DAILY CHECKLIST</div>
+            
+            <div class="time-row">
+                <span>⏰ เวลาตื่นนอน:</span>
+                <input type="text" id="wakeTime" class="modern-time" placeholder="00:00">
+            </div>
+
+            <label class="custom-check-container">
+                <input type="checkbox" id="workoutCheck" onchange="saveDailyChecklist()">
+                <span class="checkmark"></span>
+                💪 ซ้อมตามตารางเสร็จสิ้น
+            </label>
+
+            <label class="custom-check-container">
+                <input type="checkbox" id="waterCheck" onchange="saveDailyChecklist()">
+                <span class="checkmark"></span>
+                💧 ดื่มน้ำครบ 3 ลิตร
+            </label>
+
+            <label class="custom-check-container">
+                <input type="checkbox" id="napCheck" onchange="saveDailyChecklist()">
+                <span class="checkmark"></span>
+                😴 งีบพักผ่อนระหว่างวันสำเร็จ
+            </label>
+
+            <div class="time-row" style="margin-top: 15px;">
+                <span>🌙 เวลาเข้านอน:</span>
+                <input type="text" id="bedTime" class="modern-time" placeholder="00:00">
+            </div>
+
+            <div class="stats-summary">
+                📊 สถิติซ้อม 7 วันย้อนหลัง: 
+                สำเร็จ <span id="doneCount" style="color: var(--text-gold); font-weight: bold;">0</span> วัน | 
+                ขาด <span id="missCount" style="color: #ff6b6b; font-weight: bold;">0</span> วัน
+                
+                <button class="btn-view-report" onclick="openReportModal()">📊 VIEW WEEKLY REPORT</button>
+            </div>
+        </div>
+
         <div class="nutri-grid">
             <div class="nutri-box"><div id="riceDisplay" class="nutri-val gold-text">400g</div><div class="nutri-label">RICE (TARGET)</div></div>
             <div class="nutri-box"><div id="cardioDisplay" class="nutri-val gold-text">-</div><div class="nutri-label">TODAY'S CARDIO</div></div>
@@ -109,7 +198,7 @@
             <div class="card-title">
                 <span>🏋️ MISSION: <br><span id="dayNameDisplay" style="color:#888; font-size:0.8rem;">MONDAY</span></span>
                 <div class="btn-group">
-                    <button id="viewTableBtn" class="btn-view-table" style="display:none;">🔎 ตารางเทรน</button>
+                    <button id="viewTableBtn" class="btn-view-table" style="display:none;">🔎 VIEW TABLE</button>
                     <button id="viewAbsBtn" class="btn-view-table btn-abs" style="display:none;">🔥 ABS TABLE</button>
                 </div>
             </div>
@@ -135,7 +224,7 @@
             </div>
         </div>
 
-        <div style="text-align: center; margin-top: 20px; font-size: 0.7rem; color: #444;">App V.10.0 | Master Schedule Sync</div>
+        <div style="text-align: center; margin-top: 20px; font-size: 0.7rem; color: #444;">App V.10.2 (Ultimate Dashboard) | Master Schedule Sync</div>
     </div>
 
     <div id="imageModal" class="modal" onclick="closeModal()">
@@ -143,9 +232,33 @@
         <div class="close-btn">✕</div>
     </div>
 
+    <div id="reportModal" class="modal">
+        <div class="report-card">
+            <div class="close-report" onclick="closeReportModal()">✕</div>
+            <h2 style="color: var(--text-gold); font-family: 'Playfair Display', serif; margin-top: 5px;">WEEKLY REPORT</h2>
+            
+            <div class="report-score" id="reportScore">0%</div>
+            <div class="report-feedback" id="reportFeedback">-</div>
+
+            <div class="report-section-title">🗓️ สรุปการซ้อม 7 วันย้อนหลัง</div>
+            <div class="report-days-grid" id="reportDaysGrid">
+                </div>
+
+            <div class="report-section-title">💧 สรุปวินัยอื่นๆ</div>
+            <div class="habit-grid">
+                <div class="habit-box">💧 ดื่มน้ำ 3L<br><span id="reportWater">0/7</span></div>
+                <div class="habit-box">😴 งีบพักผ่อน<br><span id="reportNap">0/7</span></div>
+            </div>
+
+            <div class="report-section-title">⚖️ เทียบการเปลี่ยนแปลง (ล่าสุด)</div>
+            <div class="body-stats-grid" id="reportBodyStats">
+                </div>
+        </div>
+    </div>
+
     <script>
         // --- 1. CONFIGURATION ---
-        const startDate = new Date(2026, 2, 02); // เริ่ม 02 มี.ค. 2026
+        const startDate = new Date(2026, 2, 02);
 
         // --- 2. DATE LOGIC ---
         const today = new Date();
@@ -161,7 +274,7 @@
         document.getElementById('dayDisplay').innerText = currentDay > 0 ? currentDay : 1;
         document.getElementById('progressBar').style.width = Math.min(((currentDay > 0 ? currentDay : 1)/90)*100, 100) + "%";
 
-        // --- 3. FOOD LOGIC (อิงตามสัปดาห์) ---
+        // --- 3. FOOD LOGIC ---
         let rice="400g", phaseText=`Week ${currentWeek}: Base Build`;
         if (currentWeek <= 2) { rice = "400g"; phaseText = `Week ${currentWeek}: Base Build`; }
         else if (currentWeek <= 4) { rice = "300g"; phaseText = `Week ${currentWeek}: Burn Step 1`; }
@@ -173,8 +286,6 @@
         document.getElementById('phaseDisplay').innerText = phaseText;
 
         // --- 4. MASTER SCHEDULE LOGIC ---
-        
-        // ก. คำนวณหาชื่อโฟลเดอร์รูปภาพ (Prefix) ว่าสัปดาห์นี้ต้องดึงรูปเซ็ตไหน
         let weekPrefix = "1";
         if (currentWeek <= 4) weekPrefix = "1";
         else if (currentWeek === 5) weekPrefix = "5";
@@ -183,98 +294,70 @@
         else if (currentWeek <= 14) weekPrefix = "11";
         else weekPrefix = "15";
 
-        // ข. กำหนดค่าเริ่มต้น
         let workoutTitle = "Rest Day", workoutDesc = "", imageName = "", absImageName = "", dailyCardio = "Rest";
 
-        // ค. เช็ควันจันทร์ - อาทิตย์
-        if (dayOfWeek === 1) { // วันจันทร์ (Day A + Cardio)
-            workoutTitle = "Day A + Cardio";
-            imageName = `w${weekPrefix}-a.jpg`;
+        if (dayOfWeek === 1) { 
+            workoutTitle = "Day A + Cardio"; imageName = `w${weekPrefix}-a.jpg`;
             if (weekPrefix === "1" || weekPrefix === "11") dailyCardio = "45m";
-            else if (weekPrefix === "15") dailyCardio = "40m";
-            else dailyCardio = "60m"; // Week 5, 6, 10
+            else if (weekPrefix === "15") dailyCardio = "40m"; else dailyCardio = "60m";
             workoutDesc = `เวทเทรนนิ่ง Day A และคาร์ดิโอ ${dailyCardio}`;
         } 
-        else if (dayOfWeek === 2) { // วันอังคาร (Day B + Abs)
-            workoutTitle = "Day B + Abs";
-            imageName = `w${weekPrefix}-b.jpg`;
-            absImageName = "Abs.jpg";
-            dailyCardio = "-"; 
+        else if (dayOfWeek === 2) { 
+            workoutTitle = "Day B + Abs"; imageName = `w${weekPrefix}-b.jpg`; absImageName = "Abs.jpg"; dailyCardio = "-"; 
             workoutDesc = `เวทเทรนนิ่ง Day B และปั้นหน้าท้อง (Abs)`;
         } 
-        else if (dayOfWeek === 3) { // วันพุธ (Cardio + Abs)
-            workoutTitle = "Cardio + Abs";
-            absImageName = "Abs.jpg";
+        else if (dayOfWeek === 3) { 
+            workoutTitle = "Cardio + Abs"; absImageName = "Abs.jpg";
             if (weekPrefix === "1" || weekPrefix === "5" || weekPrefix === "6" || weekPrefix === "10") dailyCardio = "60m";
-            else if (weekPrefix === "11") dailyCardio = "45m";
-            else if (weekPrefix === "15") dailyCardio = "40m";
+            else if (weekPrefix === "11") dailyCardio = "45m"; else if (weekPrefix === "15") dailyCardio = "40m";
             workoutDesc = `คาร์ดิโอ ${dailyCardio} และปั้นหน้าท้อง (Abs)`;
         } 
-        else if (dayOfWeek === 4) { // วันพฤหัส (Day C + Cardio)
-            workoutTitle = "Day C + Cardio";
-            imageName = `w${weekPrefix}-c.jpg`;
+        else if (dayOfWeek === 4) { 
+            workoutTitle = "Day C + Cardio"; imageName = `w${weekPrefix}-c.jpg`;
             if (weekPrefix === "1" || weekPrefix === "6" || weekPrefix === "11") dailyCardio = "45m";
-            else if (weekPrefix === "5" || weekPrefix === "10") dailyCardio = "60m";
-            else if (weekPrefix === "15") dailyCardio = "40m";
+            else if (weekPrefix === "5" || weekPrefix === "10") dailyCardio = "60m"; else if (weekPrefix === "15") dailyCardio = "40m";
             workoutDesc = `เวทเทรนนิ่ง Day C และคาร์ดิโอ ${dailyCardio}`;
         } 
-        else if (dayOfWeek === 5) { // วันศุกร์ (Day D + Abs)
-            workoutTitle = "Day D + Abs";
-            imageName = `w${weekPrefix}-d.jpg`;
-            absImageName = "Abs.jpg";
-            dailyCardio = "-";
+        else if (dayOfWeek === 5) { 
+            workoutTitle = "Day D + Abs"; imageName = `w${weekPrefix}-d.jpg`; absImageName = "Abs.jpg"; dailyCardio = "-";
             workoutDesc = `เวทเทรนนิ่ง Day D และปั้นหน้าท้อง (Abs)`;
         } 
-        else if (dayOfWeek === 6) { // วันเสาร์ (Rest Day)
-            workoutTitle = "Rest Day";
-            workoutDesc = "พักผ่อนฟื้นฟูร่างกายอย่างเต็มที่ (No Gym)";
+        else if (dayOfWeek === 6) { 
+            workoutTitle = "Rest Day"; workoutDesc = "พักผ่อนฟื้นฟูร่างกายอย่างเต็มที่ (No Gym)";
         } 
-        else if (dayOfWeek === 0) { // วันอาทิตย์ (HIIT Cardio)
-            workoutTitle = "HIIT Cardio";
-            dailyCardio = "HIIT";
-            workoutDesc = "คาร์ดิโอแบบหนักสลับเบา (HIIT) รีดไขมัน";
+        else if (dayOfWeek === 0) { 
+            workoutTitle = "HIIT Cardio"; dailyCardio = "HIIT"; workoutDesc = "คาร์ดิโอแบบหนักสลับเบา (HIIT) รีดไขมัน";
         }
 
-        // อัปเดตข้อมูลขึ้นหน้าจอ
         document.getElementById('workoutTitle').innerText = workoutTitle;
         document.getElementById('workoutDesc').innerText = workoutDesc;
         document.getElementById('cardioDisplay').innerText = dailyCardio;
 
-        // จัดการแสดงปุ่มกด
         const btnMain = document.getElementById('viewTableBtn');
         const btnAbs = document.getElementById('viewAbsBtn');
 
-        if(imageName !== "") { 
-            btnMain.style.display = "inline-block"; 
-            btnMain.onclick = function() { openModal(imageName); }; 
-        } else { 
-            btnMain.style.display = "none"; 
-        }
-
-        if(absImageName !== "") { 
-            btnAbs.style.display = "inline-block"; 
-            btnAbs.onclick = function() { openModal(absImageName); }; 
-        } else { 
-            btnAbs.style.display = "none"; 
-        }
+        if(imageName !== "") { btnMain.style.display = "inline-block"; btnMain.onclick = function() { openImageModal(imageName); }; } 
+        else { btnMain.style.display = "none"; }
+        if(absImageName !== "") { btnAbs.style.display = "inline-block"; btnAbs.onclick = function() { openImageModal(absImageName); }; } 
+        else { btnAbs.style.display = "none"; }
         
-        function openModal(imgSrc) { document.getElementById('workoutImage').src = imgSrc; document.getElementById('imageModal').style.display = "flex"; }
+        function openImageModal(imgSrc) { document.getElementById('workoutImage').src = imgSrc; document.getElementById('imageModal').style.display = "flex"; }
         function closeModal() { document.getElementById('imageModal').style.display = "none"; }
 
         // --- 5. HISTORY LOG ---
         const historyKey = 'belle_fit_log_v8'; 
         let historyData = [];
+
         window.onload = function() {
             const savedData = localStorage.getItem(historyKey);
             if(savedData) { historyData = JSON.parse(savedData); renderHistory(); }
+            loadDailyChecklist(); 
         }
+
         function saveLog() {
-            const w = document.getElementById('logWeight').value;
-            const chest = document.getElementById('logChest').value;
-            const waist = document.getElementById('logWaist').value;
-            const hip = document.getElementById('logHip').value;
-            const d = new Date();
-            const dateStr = d.getDate() + "/" + (d.getMonth()+1);
+            const w = document.getElementById('logWeight').value; const chest = document.getElementById('logChest').value;
+            const waist = document.getElementById('logWaist').value; const hip = document.getElementById('logHip').value;
+            const d = new Date(); const dateStr = d.getDate() + "/" + (d.getMonth()+1);
             if(!w && !chest && !waist && !hip) { alert("กรุณากรอกข้อมูลอย่างน้อย 1 ช่องค่ะ"); return; }
             historyData.unshift({ id: Date.now(), date: dateStr, weight: w || "-", chest: chest || "-", waist: waist || "-", hip: hip || "-" });
             localStorage.setItem(historyKey, JSON.stringify(historyData));
@@ -282,6 +365,7 @@
             document.getElementById('logWaist').value = ""; document.getElementById('logHip').value = "";
             renderHistory();
         }
+
         function renderHistory() {
             const tbody = document.getElementById('historyBody'); tbody.innerHTML = "";
             historyData.forEach((log, index) => {
@@ -290,7 +374,150 @@
                 tbody.appendChild(tr);
             });
         }
+
         function deleteLog(index) { if(confirm("ลบไหมคะ?")) { historyData.splice(index, 1); localStorage.setItem(historyKey, JSON.stringify(historyData)); renderHistory(); } }
+
+        // --- 6. DAILY CHECKLIST LOGIC ---
+        function saveDailyChecklist() {
+            const todayStr = new Date().toISOString().split('T')[0];
+            const checklistData = {
+                wakeTime: document.getElementById('wakeTime').value,
+                bedTime: document.getElementById('bedTime').value,
+                workoutCheck: document.getElementById('workoutCheck').checked,
+                waterCheck: document.getElementById('waterCheck').checked,
+                napCheck: document.getElementById('napCheck').checked
+            };
+            localStorage.setItem('plannerChecklist_' + todayStr, JSON.stringify(checklistData));
+            updateWeeklyStats();
+        }
+
+        function loadDailyChecklist() {
+            const todayStr = new Date().toISOString().split('T')[0];
+            const savedData = JSON.parse(localStorage.getItem('plannerChecklist_' + todayStr));
+            
+            if (savedData) {
+                document.getElementById('wakeTime').value = savedData.wakeTime || '';
+                document.getElementById('bedTime').value = savedData.bedTime || '';
+                document.getElementById('workoutCheck').checked = savedData.workoutCheck || false;
+                document.getElementById('waterCheck').checked = savedData.waterCheck || false;
+                document.getElementById('napCheck').checked = savedData.napCheck || false;
+            }
+            updateWeeklyStats();
+        }
+
+        function updateWeeklyStats() {
+            let doneCount = 0; let missedCount = 0; const now = new Date();
+            for (let i = 0; i < 7; i++) {
+                let checkDate = new Date(now); checkDate.setDate(now.getDate() - i);
+                let dateStr = checkDate.toISOString().split('T')[0];
+                let savedData = JSON.parse(localStorage.getItem('plannerChecklist_' + dateStr));
+                if (savedData && savedData.workoutCheck === true) { doneCount++; } else { missedCount++; }
+            }
+            document.getElementById('doneCount').innerText = doneCount;
+            document.getElementById('missCount').innerText = missedCount;
+        }
+
+        // --- 7. MODERN TIME PICKER ---
+        document.addEventListener("DOMContentLoaded", function() {
+            flatpickr(".modern-time", {
+                enableTime: true, noCalendar: true, dateFormat: "H:i", time_24hr: true, disableMobile: true,
+                onChange: function() { saveDailyChecklist(); }
+            });
+        });
+
+        // --- 8. WEEKLY REPORT DASHBOARD (ระบบใหม่ล่าสุด) ---
+        function openReportModal() {
+            document.getElementById('reportModal').style.display = 'flex';
+            generateWeeklyReport();
+        }
+
+        function closeReportModal() {
+            document.getElementById('reportModal').style.display = 'none';
+        }
+
+        function generateWeeklyReport() {
+            const now = new Date();
+            const daysNamesShort = ["อา.", "จ.", "อ.", "พ.", "พฤ.", "ศ.", "ส."];
+            
+            let workoutCount = 0; let waterCount = 0; let napCount = 0;
+            let daysHtml = '';
+            
+            // วนลูปสร้างลูกแก้วรายวัน (จาก 6 วันที่แล้ว จนถึง วันนี้)
+            for (let i = 6; i >= 0; i--) {
+                let checkDate = new Date(now);
+                checkDate.setDate(now.getDate() - i);
+                let dateStr = checkDate.toISOString().split('T')[0];
+                let dayIdx = checkDate.getDay();
+                
+                let savedData = JSON.parse(localStorage.getItem('plannerChecklist_' + dateStr));
+                
+                let isWorkoutDone = savedData && savedData.workoutCheck;
+                let isWaterDone = savedData && savedData.waterCheck;
+                let isNapDone = savedData && savedData.napCheck;
+                
+                if (isWorkoutDone) workoutCount++;
+                if (isWaterDone) waterCount++;
+                if (isNapDone) napCount++;
+                
+                let bubbleClass = isWorkoutDone ? 'success' : 'fail';
+                let icon = isWorkoutDone ? '✅' : '❌';
+                if (!savedData && i !== 0) { bubbleClass = ''; icon = '➖'; } // กรณีวันในอดีตที่ไม่ได้บันทึก
+                
+                daysHtml += `<div class="day-bubble ${bubbleClass}"><div>${daysNamesShort[dayIdx]}</div><div style="margin-top:8px; font-size:1.1rem;">${icon}</div></div>`;
+            }
+            
+            document.getElementById('reportDaysGrid').innerHTML = daysHtml;
+            document.getElementById('reportWater').innerText = `${waterCount}/7`;
+            document.getElementById('reportNap').innerText = `${napCount}/7`;
+            
+            // คำนวณเปอร์เซ็นต์
+            let score = Math.round((workoutCount / 7) * 100);
+            document.getElementById('reportScore').innerText = `${score}%`;
+            
+            // ข้อความให้กำลังใจ
+            let feedback = "";
+            if (score >= 80) feedback = "ยอดเยี่ยมมากบอส! วินัยระดับแพลตตินั่ม รักษาระดับไว้นะคะ 🌟";
+            else if (score >= 50) feedback = "ทำได้ดีค่ะ! พยายามเก็บตกวันที่หลุดอีกนิด ร่างทองอยู่ไม่ไกล 💪";
+            else feedback = "สัปดาห์นี้งานอาจจะรัดตัวแน่เลย ไม่เป็นไรค่ะ เริ่มต้นสัปดาห์ใหม่กัน! ✨";
+            document.getElementById('reportFeedback').innerText = feedback;
+            
+            // ระบบดึงข้อมูล History มาเทียบสัดส่วน
+            let bodyHtml = '';
+            if (historyData.length >= 2) {
+                let latest = historyData[0]; // ครั้งล่าสุดที่จด
+                let prev = historyData[1];   // ครั้งก่อนหน้าที่จด
+                
+                bodyHtml += createStatDiffHTML("น้ำหนัก", latest.weight, prev.weight, "kg");
+                bodyHtml += createStatDiffHTML("รอบอก", latest.chest, prev.chest, "นิ้ว");
+                bodyHtml += createStatDiffHTML("รอบเอว", latest.waist, prev.waist, "นิ้ว");
+                bodyHtml += createStatDiffHTML("สะโพก", latest.hip, prev.hip, "นิ้ว");
+            } else if (historyData.length === 1) {
+                let latest = historyData[0];
+                bodyHtml = `<div style="grid-column: 1 / -1; text-align:center; color:#888; font-size:0.8rem; padding: 10px;">บอสเพิ่งบันทึกไป 1 ครั้งค่ะ ต้องบันทึกอย่างน้อย 2 ครั้งระบบถึงจะคำนวณส่วนต่างให้ได้นะคะ<br><br><span style="color:var(--text-gold);">ข้อมูลล่าสุด: น้ำหนัก ${latest.weight} kg, เอว ${latest.waist}"</span></div>`;
+            } else {
+                bodyHtml = `<div style="grid-column: 1 / -1; text-align:center; color:#888; font-size:0.8rem; padding: 10px;">บอสยังไม่ได้บันทึกข้อมูลสัดส่วนลงใน DAILY LOG ค่ะ</div>`;
+            }
+            document.getElementById('reportBodyStats').innerHTML = bodyHtml;
+        }
+
+        // ฟังก์ชันช่วยสร้างกรอบเทียบตัวเลขสวยๆ
+        function createStatDiffHTML(label, currStr, prevStr, unit) {
+            let curr = parseFloat(currStr);
+            let prev = parseFloat(prevStr);
+            let diffHtml = '<span class="stat-diff diff-none">-</span>';
+            
+            if (!isNaN(curr) && !isNaN(prev)) {
+                let diff = curr - prev;
+                if (diff < 0) diffHtml = `<span class="stat-diff diff-down">▼ ${Math.abs(diff).toFixed(1)}</span>`;
+                else if (diff > 0) diffHtml = `<span class="stat-diff diff-up">▲ ${Math.abs(diff).toFixed(1)}</span>`;
+                else diffHtml = `<span class="stat-diff diff-none">คงที่</span>`;
+            }
+            
+            return `<div class="stat-item">
+                <div>${label}<br><span class="stat-val">${currStr||'-'} <span style="font-size:0.6rem;font-weight:normal;color:#666;">${unit}</span></span></div>
+                ${diffHtml}
+            </div>`;
+        }
     </script>
 </body>
 </html>
